@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+
+#[[-------------------------------------------------------------------- Settings
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o pipefail  # don't hide errors within pipes
+# set -o xtrace  # for debug : could use bash -x prog instead 
+#]]
+
+#[[-------------------------------------------------------------------- Script variables
+readonly __script="$(basename "${BASH_SOURCE[0]}")"
+readonly __dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+## Separators
+SEP1="["
+SEP2="]"
+
+START="["
+MID="|"
+END="]"
+
+#]]
+
+
+
+
+#[[-------------------------------------------------------------------- Utils
+volume(){
+  local mix_data="$(amixer get Master | tail -1)"
+  local volume="$(amixer get Master | grep dB |sed -r 's/.*\[(.*)%\].*/\1/')"
+
+  if [[ "${mix_data}" == *\[off\]* ]]; then
+    printf "🔇🔇"
+  elif [[ "${mix_data}" == *\[on\]* ]]; then
+    if [ ${volume:-0} -eq 0 ]; then
+      printf "🔇"
+    elif [ ${volume} -gt 0 ] && [ "${volume}" -le 33 ]; then
+      printf "🔈 %s%%" "${volume}"
+    elif [[ "${volume}" -gt 33 ]] && [[ "${volume}" -le 66 ]]; then
+      printf "🔉 %s%%" "${volume}"
+    else
+      printf "🔊 %s%%" "${volume}"
+    fi
+    fi
+  }
+
+backlight () {
+  printf "🌗 %.2s%%" "$(xbacklight -get)"
+}
+
+transmission(){
+  local torrent=$(transmission-remote -l | sed '2q;d' | sed 's/\(.\) /\1/g')
+  local id=$(printf "%s" "${torrent}" | awk '{print $1;}')
+  local status=$(printf "%s" "${torrent}" | awk '{print $8;}')
+  local eta=$(printf "%s" "${torrent}" | awk '{print $4;}')
+  local name=$(printf "%s" "${torrent}" | awk '{for(i=9;i<=NF;++i)print $i}' | tr -d "\n" | head -c 20; printf "...")
+  local done=$(printf "%s" "${torrent}" | awk '{print $2;}')
+  local up=$(printf "%s" "${torrent}" | awk '{print $5;}')
+  local down=$(printf "%s" "${torrent}" | awk '{print $5;}')
+
+  if [ "${id}" != "Sum:" ]; then
+    case "${status}" in
+      "Idle")
+        printf "🛑 %s | %s %s ⬆%s ⬇%s" "${name}" "${done}" "${eta}" "${up}" "${down}"
+        ;;
+      "Seeding")
+        printf "🌱 %s | ⬆%s ⬇%s" "${name}" "${up}" "${down}"
+        ;;
+      "Downloading")
+        printf "⏬ %s | %s %s ⬆%s ⬇%s" "${name}" "${done}" "${eta}" "${up}" "${down}"
+        ;;
+    esac
+  fi
+}
+
+song(){
+  if pidof mpd >/dev/null ;then
+    local artist=$(mpc current -f %artist%)
+    local track=$(mpc current -f %title%)
+    local position=$(mpc status | grep "%)" | awk '{ print $3 }' | awk -F/ '{ print $1 }')
+    local duration=$(mpc current -f %time%)
+    local status=$(mpc status | sed -n 2p | awk '{print $1;}')
+    local shuffle=$(mpc status | tail -n 1 | awk '{print $6}')
+
+    if [ "$status" = "[playing]" ]; then
+      status="▶"
+    else
+      status="⏸"
+    fi
+    printf "%s %s-%s %s/%s%s%s" "${status}" "${artist}" "${track}" "${position}" "${duration}"
+    fi
+  }
+
+
+weather(){
+  local location="clermont-ferrand"
+  printf "%s" "$(curl -s wttr.in/${location}?format=1)"
+}
+
+
+print_song() {
+  local track="$(mpc current)"
+  local status="$(mpc status | sed '2q;d' | sed -r 's/.*\[(.*)\].* (.*:.*\/.*:.*) .*/\1 \2/')"
+  local artist="$(echo "${track}" | cut -d '-' -f 1)"
+  local title="$(echo "${track}" | cut -d '-' -f 2 )"
+  [[ -n "$artist" ]] && echo -e "${col_sel} [${artist::10}]${col_war}(${title}) ${status}"
+}
+
+
+
+power(){
+  #local is_on_supply="$(cat /sys/class/power_supply/ACAD/online)"
+  local battery="$(acpi -b | sed 's/.*[charging|charging|full], \([0-9]*\)%.*/\1/gi')"
+  local status="$( acpi -b | sed 's/.*: \([a-zA-Z]*\),.*/\1/gi')"
+
+  printf "⚡ %s%% %s" "${battery}" "${status:0:4}"
+  if [ "${battery}" -lt 15 ]; then 
+    notify-send -u critical "Critical Power"
+  fi
+}
+
+wifi(){
+  local ssid="$( /sbin/iwconfig 2> /dev/null | grep ESSID | cut -d ':' -f 2 | awk -F ',' '{gsub(/"/, "", $1); print $1}' | cut -d ' ' -f 1 )"
+  printf "%s" "${ssid}"
+}
+
+storage(){
+  # Used and total memory
+  local mem_used=$(free -h | awk '(NR == 2) {print $3"/"$2}')
+  # CPU temperature
+  # CPU=$(sysctl -n hw.sensors.cpu0.temp0 | cut -d. -f1)
+  
+  local storage_used=$(df -h | grep '/home$' | awk '{print $3"/"$2" "$5}')
+
+
+  printf "🎟  %s 🗂  %s" "${mem_used}" "${storage_used}"
+}
+
+datetime(){
+  local datetime="$(date "+%a%d-%m-%y %I:%M")"
+  printf "🗓 %s" "${datetime}"
+}
+
+print_cpu_info(){
+  :
+
+}
+#]]
+
+#[[-------------------------------------------------------------------- Main
+main() {
+
+
+#  while true; do
+#    xsetroot -name "$(dwm_transmission) $(dwm_mpc) $(dwm_resources) $(dwm_battery) $(dwm_backlight) $(dwm_alsa) $(dwm_date) $(d
+#    wm_loadavg)"
+#    sleep 1m
+#  done
+
+while true; do
+  xsetroot -name "${START} $(song) ${MID} $(volume) ${MID} $(backlight) ${MID} $(weather) ${MID} $(storage) ${MID} $(power) ${MID} $(datetime) ${END}"
+  sleep 1m
+done &
+
+}
+#]]
+
+main "${@}"
+

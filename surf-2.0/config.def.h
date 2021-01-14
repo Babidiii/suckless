@@ -6,6 +6,21 @@ static char *styledir       = "~/.config/surf/styles/";
 static char *cachedir       = "~/.config/surf/cache/";
 static char *cookiefile     = "~/.config/surf/cookies.txt";
 
+static char *searchengine = "https://duckduckgo.com/?q=";
+
+static SearchEngine searchengines[] = {
+	{ "lib",	"http://gen.lib.rus.ec/search.php?req=%s&lg_topic=libgen&open=0&view=simple&res=25&phrase=0&column=def"   },
+	{ "aw",		"https://wiki.archlinux.org/index.php?search=%s&title=Special%3ASearch" },
+	{ "vw",		"https://wiki.voidlinux.org/index.php?search=%s&title=Special%3ASearch&go=Go" },
+	{ "osm",	"https://www.openstreetmap.org/search?query=%s" },
+	{ "i",		"https://duckduckgo.com/?q=%s&atb=v1-1&t=h_&iar=images" },
+	{ "tpb",	"https://pirateproxy.app/s/?q=%s&=on&page=0&orderby=99" },
+	{ "eb",		"https://www.ebay.com/sch/i.html?_from=R40&_trksid=m570.l1313&_nkw=%s&_sacat=0" },
+	{ "wt",		"https://www.wiktionary.org/search-redirect.php?family=wiktionary&language=en&search=%s&go=Go" },
+	{ "w",		"https://www.wikipedia.org/search-redirect.php?family=wikipedia&language=en&search=%s&language=en&go=Go" },
+	{ "yt",		"https://www.youtube.com/results?search_query=%s" },
+};
+
 /* Webkit default features */
 static Parameter defconfig[ParameterLast] = {
 	SETB(AcceleratedCanvas,  1),
@@ -37,32 +52,32 @@ static Parameter defconfig[ParameterLast] = {
 
 static UriParameters uriparams[] = {
 	{ "(://|\\.)suckless\\.org(/|$)", {
-	  FSETB(JavaScript, 0),
-	  FSETB(Plugins,    0),
-	}, },
+																			FSETB(JavaScript, 0),
+																			FSETB(Plugins,    0),
+																		}, },
 };
 
 static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
-                                    WEBKIT_FIND_OPTIONS_WRAP_AROUND;
+WEBKIT_FIND_OPTIONS_WRAP_AROUND;
 
 #define SETPROP(p, q) { \
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "prop=\"`xprop -id $2 $0 " \
-             "| sed \"s/^$0(STRING) = \\(\\\\\"\\?\\)\\(.*\\)\\1$/\\2/\" " \
-             "| xargs -0 printf %b | dmenu`\" &&" \
-             "xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
-             p, q, winid, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+		"prop=\"`xprop -id $2 $0 " \
+		"| sed \"s/^$0(STRING) = \\(\\\\\"\\?\\)\\(.*\\)\\1$/\\2/\" " \
+		"| xargs -0 printf %b | dmenu`\" &&" \
+		"xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
+		p, q, winid, NULL \
+	} \
 }
 
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(d, r) { \
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "st -e /bin/sh -c \"curl -g -L -J -O --user-agent '$1'" \
-             " --referer '$2' -b $3 -c $3 '$0';" \
-             " sleep 5;\"", \
-             d, useragent, r, cookiefile, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+		"st -e /bin/sh -c \"curl -g -L -J -O --user-agent '$1'" \
+		" --referer '$2' -b $3 -c $3 '$0';" \
+		" sleep 5;\"", \
+		d, useragent, r, cookiefile, NULL \
+	} \
 }
 
 /* PLUMB(URI) */
@@ -70,16 +85,16 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
  * "http://" or "https://" should be opened.
  */
 #define PLUMB(u) {\
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "xdg-open \"$0\"", u, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+		"xdg-open \"$0\"", u, NULL \
+	} \
 }
 
 /* VIDEOPLAY(URI) */
 #define VIDEOPLAY(u) {\
-        .v = (const char *[]){ "/bin/sh", "-c", \
-             "mpv --really-quiet \"$0\"", u, NULL \
-        } \
+	.v = (const char *[]){ "/bin/sh", "-c", \
+		"mpv --really-quiet \"$0\"", u, NULL \
+	} \
 }
 
 /* styles */
@@ -165,4 +180,4 @@ static Button buttons[] = {
 	{ OnMedia,      MODKEY,         1,      clickexternplayer, { 0 },       1 },
 };
 
-#define HOMEPAGE "https://duckduckgo.com/"
+#define HOMEPAGE "https://www.startpage.com"

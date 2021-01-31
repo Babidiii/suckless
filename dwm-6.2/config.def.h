@@ -8,8 +8,8 @@ static const unsigned int snap      = 32;       /* snap pixel */
 static const int swallowfloating    = 0;
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=10" };
-static const char dmenufont[]       = "monospace:size=10";
+static const char *fonts[]          =  { "IBM Plex Mono:size=12:antialias=true:autohint=true"};
+static const char dmenufont[]       = "IBM Plex Mono:size=12:antialias=true:autohint=true";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -24,8 +24,8 @@ static const char *colors[][3]      = {
 	/*                   fg         bg         border   */
 	[SchemeNorm]   = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]    = { col_gray4, col_cyan,  col_cyan  },
-  [SchemeWarn]   = { col_black, col_yellow, col_red },
-  [SchemeUrgent] = { col_white, col_red,    col_red },
+	[SchemeWarn]   = { col_black, col_yellow, col_red },
+	[SchemeUrgent] = { col_white, col_red,    col_red },
 };
 
 /* tagging */
@@ -125,21 +125,30 @@ static Key keys[] = {
 	{ 0,                            XK_Print,   spawn,      {.v = scrotcmd } },
 	{ ShiftMask,                    XK_Print,   spawn,      {.v = scrotfocusedcmd } },
 	{ ControlMask,                  XK_Print,   spawn,      SHCMD("sleep 1s;scrot --select")},
-  { 0,                            XF86XK_AudioLowerVolume,  spawn,  {.v = downvol } }, // volume down
-  { 0,                            XF86XK_AudioMute,         spawn,  {.v = mutevol } }, // volume mute
-  { 0,                            XF86XK_AudioRaiseVolume,  spawn,  {.v = upvol   } }, // volume up
-  { 0,                            XF86XK_MonBrightnessUp,   spawn,  {.v = brupcmd} },   // brightness up
-  { 0,                            XF86XK_MonBrightnessDown, spawn,  {.v = brdowncmd} }, // brightness down
-	TAGKEYS( 0x26, 0)	// 0x26 = touche 1
-	TAGKEYS( 0xe9, 1)	// 0xe9 = touche 2
-	TAGKEYS( 0x22, 2)	// 0x22 = touche 3
-	TAGKEYS( 0x27, 3)	// 0x27 = touche 4
-	TAGKEYS( 0x28, 4)	// 0x28 = touche 5
-	TAGKEYS( 0x2d, 5)	// 0x2d = touche 6
-	TAGKEYS( 0xe8, 6)	// 0xe8 = touche 7
-	TAGKEYS( 0x5f, 7)	// 0x5f = touche 8
-	TAGKEYS( 0xe7, 8) // 0xe7 = touche 9
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{ 0,                            XF86XK_AudioLowerVolume,  spawn,  {.v = downvol } }, // volume down
+	{ 0,                            XF86XK_AudioMute,         spawn,  {.v = mutevol } }, // volume mute
+	{ 0,                            XF86XK_AudioRaiseVolume,  spawn,  {.v = upvol   } }, // volume up
+	{ 0,                            XF86XK_MonBrightnessUp,   spawn,  {.v = brupcmd} },   // brightness up
+	{ 0,                            XF86XK_MonBrightnessDown, spawn,  {.v = brdowncmd} }, // brightness down
+	TAGKEYS(                        XK_1,                      0)
+		TAGKEYS(                        XK_2,                      1)
+		TAGKEYS(                        XK_3,                      2)
+		TAGKEYS(                        XK_4,                      3)
+		TAGKEYS(                        XK_5,                      4)
+		TAGKEYS(                        XK_6,                      5)
+		TAGKEYS(                        XK_7,                      6)
+		TAGKEYS(                        XK_8,                      7)
+		TAGKEYS(                        XK_9,                      8)
+//		TAGKEYS( 0x26, 0)	// 0x26 = touche 1
+//		TAGKEYS( 0xe9, 1)	// 0xe9 = touche 2
+//		TAGKEYS( 0x22, 2)	// 0x22 = touche 3
+//		TAGKEYS( 0x27, 3)	// 0x27 = touche 4
+//		TAGKEYS( 0x28, 4)	// 0x28 = touche 5
+//		TAGKEYS( 0x2d, 5)	// 0x2d = touche 6
+//		TAGKEYS( 0xe8, 6)	// 0xe8 = touche 7
+//		TAGKEYS( 0x5f, 7)	// 0x5f = touche 8
+//		TAGKEYS( 0xe7, 8) // 0xe7 = touche 9
+		{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 };
 
 /* button definitions */

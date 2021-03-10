@@ -7,7 +7,7 @@ static int min_width = 800;                    /* minimum width when centered */
 
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *fonts[] = {
-	"monospace:size=10",
+	"monospace:size=12",
   "JoyPixels:pixelsize=10"
 };
 
@@ -32,3 +32,6 @@ static unsigned int min_lineheight = 8;
  * for example: " /?\"&[]"
  */
 static const char worddelimiters[] = " ";
+
+/* Size of the window border */
+static unsigned int border_width = 0;

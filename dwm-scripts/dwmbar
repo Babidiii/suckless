@@ -133,7 +133,7 @@ storage(){
   local storage_used=$(df -h | grep '/home$' | awk '{print $3"/"$2" "$5}')
 
 
-  printf "🎟  %s 🗂  %s" "${mem_used}" "${storage_used}"
+  printf "💾 %s 💽 %s" "${mem_used}" "${storage_used}"
 }
 
 datetime(){
@@ -158,7 +158,7 @@ main() {
 #  done
 
 while true; do
-  xsetroot -name "${START} $(song) ${MID} $(volume) ${MID} $(backlight) ${MID} $(weather) ${MID} $(storage) ${MID} $(power) ${MID} $(datetime) ${END}"
+  xsetroot -name "${START} $(song) ${MID} $(volume) ${MID} $(backlight) ${MID} ${MID} $(storage) ${MID} $(power) ${MID} $(datetime) ${END}"
   sleep 1m
 done &
 

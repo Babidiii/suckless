@@ -8,8 +8,8 @@ static const unsigned int snap      = 32;       /* snap pixel */
 static const int swallowfloating    = 0;
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          =  { "IBM Plex Mono:size=12:antialias=true:autohint=true"};
-static const char dmenufont[]       = "IBM Plex Mono:size=12:antialias=true:autohint=true";
+static const char *fonts[]          =  { "IBM Plex Mono:size=11:antialias=true:autohint=true"," JoyPixels:pixelsize=14,antialias=true:autohint=true"};
+static const char dmenufont[]       = "IBM Plex Mono:size=11:antialias=true:autohint=true";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -53,11 +53,13 @@ static const int resizehints = 1;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      	tile },    /* first entry is default */
-	{ "><>",      	NULL },    /* no layout function means floating behavior */
-	{ "[M]",      	monocle },
-	{ "[@]",	spiral },
-	{"[\\]",	dwindle},
+	{ "[]=",  	tile },    /* first entry is default */
+	{ "><>",   	NULL },    /* no layout function means floating behavior */
+	{ "[M]",    monocle },
+	{ "[@]",	  spiral },
+	{"[\\]",	  dwindle},
+	{ "|M|",	  centeredmaster},
+	{ ">M>",    centeredfloatingmaster},
 };
 
 /* key definitions */
@@ -81,9 +83,9 @@ static const char *scrotcmd[] = { "myShot", NULL };
 static const char *scrotfocusedcmd[]  = { "myShot","1", NULL };
 
 /* Volume */
-static const char *upvol[]   = { "amixer", "sset", "Master", "2%+",     NULL };
-static const char *downvol[] = { "amixer", "sset", "Master", "2%-",     NULL };
-static const char *mutevol[] = { "amixer", "sset", "Master", "toggle", NULL };
+//static const char *upvol[]   = { "amixer", "sset", "Master", "2%+" ";" "kill", "-44" "$(pidof dwmblocks)",     NULL };
+//static const char *downvol[] = { "amixer", "sset", "Master", "2%-",     NULL };
+//static const char *mutevol[] = { "amixer", "sset", "Master", "toggle", NULL };
 
 /* Brightness */
 static const char *brupcmd[]   = { "xbacklight", "-inc", "10%", NULL };
@@ -110,6 +112,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },	
 	{ MODKEY,                       XK_r,      setlayout,      {.v = &layouts[3]} },
 	{ MODKEY|ShiftMask,            	XK_r,      setlayout,      {.v = &layouts[4]} },
+  { MODKEY,                       XK_u,      setlayout,      {.v = &layouts[5]} },
+  { MODKEY,                       XK_o,      setlayout,      {.v = &layouts[6]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       0xe0,      view,           {.ui = ~0 } },
@@ -125,9 +129,9 @@ static Key keys[] = {
 	{ 0,                            XK_Print,   spawn,      {.v = scrotcmd } },
 	{ ShiftMask,                    XK_Print,   spawn,      {.v = scrotfocusedcmd } },
 	{ ControlMask,                  XK_Print,   spawn,      SHCMD("sleep 1s;scrot --select")},
-	{ 0,                            XF86XK_AudioLowerVolume,  spawn,  {.v = downvol } }, // volume down
-	{ 0,                            XF86XK_AudioMute,         spawn,  {.v = mutevol } }, // volume mute
-	{ 0,                            XF86XK_AudioRaiseVolume,  spawn,  {.v = upvol   } }, // volume up
+	{ 0,                            XF86XK_AudioLowerVolume,  spawn, SHCMD("amixer sset Master 2%-; kill -44 $(pidof dwmblocks)")}, // volume down
+	{ 0,                            XF86XK_AudioMute,         spawn,  SHCMD("amixer sset Master toggle; kill -44 $(pidof dwmblocks)") }, // volume mute
+	{ 0,                            XF86XK_AudioRaiseVolume,  spawn,  SHCMD("amixer sset Master 2%+; kill -44 $(pidof dwmblocks)") }, // volume up
 	{ 0,                            XF86XK_MonBrightnessUp,   spawn,  {.v = brupcmd} },   // brightness up
 	{ 0,                            XF86XK_MonBrightnessDown, spawn,  {.v = brdowncmd} }, // brightness down
 	TAGKEYS(                        XK_1,                      0)
